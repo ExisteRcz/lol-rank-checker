@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoL Rank Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #c89b3c, #f0e6d2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #c89b3c;
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #c89b3c, #785a28);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(200, 155, 60, 0.4);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .player-header {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+        }
+
+        .profile-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #c89b3c;
+            object-fit: cover;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 1.8rem;
+            color: #f0e6d2;
+            margin-bottom: 5px;
+        }
+
+        .player-level {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .player-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .cache-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+        }
+
+        .cache-badge.fresh {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #c89b3c;
+        }
+
+        .action-btn.refresh-btn:hover {
+            border-color: #4caf50;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .share-url-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .share-url {
+            flex: 1;
+            color: #aaa;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: rgba(200, 155, 60, 0.3);
+            border-color: #c89b3c;
+        }
+
+        .copy-btn.copied {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #c89b3c;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .rank-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .rank-emblem {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+
+        .rank-info {
+            flex: 1;
+        }
+
+        .rank-tier {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #f0e6d2;
+        }
+
+        .rank-queue {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .rank-lp {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .rank-record {
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        .win {
+            color: #4caf50;
+        }
+
+        .loss {
+            color: #f44336;
+        }
+
+        .champion-list {
+            list-style: none;
+        }
+
+        .champion-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .champion-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #555;
+        }
+
+        .champion-details {
+            flex: 1;
+        }
+
+        .champion-name {
+            font-weight: 500;
+            color: #f0e6d2;
+        }
+
+        .champion-games {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .champion-wr {
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .side-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .side-blue {
+            background: rgba(30, 144, 255, 0.2);
+            border: 1px solid rgba(30, 144, 255, 0.3);
+        }
+
+        .side-red {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .side-name {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .better-tag {
+            background: #4caf50;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .error-msg {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #ff6b6b;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #c89b3c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .unranked {
+            color: #888;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .rank-number {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #c89b3c, #785a28);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 600px) {
+            .player-header {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 60px;
+            }
+
+            .header-actions {
+                position: static;
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+
+            .profile-icon {
+                width: 80px;
+                height: 80px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .share-url-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LoL Rank Checker</h1>
+        <p class="subtitle">Check any player's ranked stats, top champions, and side winrates</p>
+
+        <div class="search-box">
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Game Name</label>
+                    <input type="text" id="gameName" placeholder="ExisteRcz" value="{{ prefill_name or '' }}">
+                </div>
+                <div class="input-group">
+                    <label>Tag</label>
+                    <input type="text" id="tagLine" placeholder="EUNE" value="{{ prefill_tag or '' }}">
+                </div>
+                <div class="input-group">
+                    <label>Region</label>
+                    <select id="region">
+                        <option value="eun1" {{ 'selected' if prefill_region == 'eun1' else '' }}>EUNE</option>
+                        <option value="euw1" {{ 'selected' if prefill_region == 'euw1' else '' }}>EUW</option>
+                        <option value="na1" {{ 'selected' if prefill_region == 'na1' else '' }}>NA</option>
+                        <option value="kr" {{ 'selected' if prefill_region == 'kr' else '' }}>Korea</option>
+                        <option value="br1" {{ 'selected' if prefill_region == 'br1' else '' }}>Brazil</option>
+                        <option value="tr1" {{ 'selected' if prefill_region == 'tr1' else '' }}>Turkey</option>
+                        <option value="ru" {{ 'selected' if prefill_region == 'ru' else '' }}>Russia</option>
+                    </select>
+                </div>
+            </div>
+            <button class="search-btn" id="searchBtn" onclick="lookup(false)">Search</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p id="loadingText">Fetching player data and analyzing matches...</p>
+        </div>
+
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        const DDRAGON_BASE = 'https://ddragon.leagueoflegends.com/cdn';
+        const RANK_EMBLEMS = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images';
+
+        let currentPlayerData = null;
+
+        function getRankEmblem(tier) {
+            const t = tier.toLowerCase();
+            return `${RANK_EMBLEMS}/ranked-mini-crests/${t}.svg`;
+        }
+
+        function getProfileIcon(iconId, version) {
+            return `${DDRAGON_BASE}/${version}/img/profileicon/${iconId}.png`;
+        }
+
+        function getChampionIcon(champId, version) {
+            return `${DDRAGON_BASE}/${version}/img/champion/${champId}.png`;
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp * 1000);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+            return date.toLocaleDateString();
+        }
+
+        function getShareUrl(gameName, tagLine, region) {
+            return `${window.location.origin}/player/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/${region}`;
+        }
+
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        async function lookup(forceRefresh = false) {
+            const gameName = document.getElementById('gameName').value.trim();
+            const tagLine = document.getElementById('tagLine').value.trim();
+            const region = document.getElementById('region').value;
+            const resultsDiv = document.getElementById('results');
+            const loadingDiv = document.getElementById('loading');
+            const loadingText = document.getElementById('loadingText');
+            const searchBtn = document.getElementById('searchBtn');
+
+            if (!gameName || !tagLine) {
+                resultsDiv.innerHTML = '<div class="error-msg">Please enter both Game Name and Tag</div>';
+                resultsDiv.classList.add('show');
+                return;
+            }
+
+            searchBtn.disabled = true;
+            loadingDiv.style.display = 'block';
+            loadingText.textContent = forceRefresh
+                ? 'Refreshing data from Riot API...'
+                : 'Fetching player data...';
+            resultsDiv.classList.remove('show');
+
+            try {
+                const response = await fetch('/lookup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ gameName, tagLine, region, refresh: forceRefresh })
+                });
+
+                const data = await response.json();
+                loadingDiv.style.display = 'none';
+                searchBtn.disabled = false;
+
+                if (!data.success) {
+                    resultsDiv.innerHTML = `<div class="error-msg">${data.error}</div>`;
+                    resultsDiv.classList.add('show');
+                    return;
+                }
+
+                currentPlayerData = data;
+
+                // Update URL without reload
+                const newUrl = getShareUrl(data.gameName, data.tagLine, region);
+                window.history.pushState({}, '', `/player/${encodeURIComponent(data.gameName)}/${encodeURIComponent(data.tagLine)}/${region}`);
+
+                const version = data.ddragon_version || '14.24.1';
+                const profileIconUrl = data.profileIcon ? getProfileIcon(data.profileIcon, version) : '';
+                const shareUrl = getShareUrl(data.gameName, data.tagLine, region);
+                const cacheStatus = data.from_cache
+                    ? `<span class="cache-badge">Cached - ${formatTime(data.updated_at)}</span>`
+                    : `<span class="cache-badge fresh">Fresh data</span>`;
+
+                let html = `
+                    <div class="player-header">
+                        <div class="header-actions">
+                            <button class="action-btn refresh-btn" onclick="lookup(true)" title="Refresh data from Riot API">
+                                ↻ Refresh
+                            </button>
+                        </div>
+                        ${profileIconUrl ? `<img src="${profileIconUrl}" alt="Profile Icon" class="profile-icon" onerror="this.style.display='none'">` : ''}
+                        <div class="player-info">
+                            <div class="player-name">${data.player}</div>
+                            <div class="player-level">Level ${data.level || 'Unknown'}</div>
+                            <div class="player-meta">
+                                ${cacheStatus}
+                            </div>
+                            <div class="share-url-container">
+                                <span class="share-url">${shareUrl}</span>
+                                <button class="copy-btn" onclick="copyToClipboard('${shareUrl}', this)">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                `;
+
+                // Ranked stats
+                html += '<div class="stat-card"><h3>Ranked Stats</h3>';
+                if (data.ranked.length === 0) {
+                    html += '<p class="unranked">Unranked this season</p>';
+                } else {
+                    data.ranked.forEach(r => {
+                        const emblemUrl = getRankEmblem(r.tier);
+                        html += `
+                            <div class="rank-display">
+                                <img src="${emblemUrl}" alt="${r.tier}" class="rank-emblem" onerror="this.style.display='none'">
+                                <div class="rank-info">
+                                    <div class="rank-queue">${r.queue}</div>
+                                    <div class="rank-tier">${r.tier} ${r.rank}</div>
+                                    <div class="rank-lp">${r.lp} LP</div>
+                                    <div class="rank-record">
+                                        <span class="win">${r.wins}W</span> /
+                                        <span class="loss">${r.losses}L</span>
+                                        (${r.winrate}% WR)
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                html += '</div>';
+
+                // Top Champions
+                html += '<div class="stat-card"><h3>Top Champions (min 3 games)</h3>';
+                if (data.top_champions.length === 0) {
+                    html += '<p class="unranked">Not enough games on any champion</p>';
+                } else {
+                    html += '<ul class="champion-list">';
+                    data.top_champions.forEach((c, i) => {
+                        const wrColor = c.winrate >= 50 ? '#4caf50' : '#f44336';
+                        const champIconUrl = getChampionIcon(c.id, version);
+                        html += `
+                            <li class="champion-item">
+                                <span class="rank-number">${i + 1}</span>
+                                <img src="${champIconUrl}" alt="${c.name}" class="champion-icon" onerror="this.style.display='none'">
+                                <div class="champion-details">
+                                    <div class="champion-name">${c.name}</div>
+                                    <div class="champion-games">${c.wins}W / ${c.losses}L (${c.games} games)</div>
+                                </div>
+                                <span class="champion-wr" style="color: ${wrColor}">${c.winrate}%</span>
+                            </li>
+                        `;
+                    });
+                    html += '</ul>';
+                }
+                html += '</div>';
+
+                // Side Stats
+                if (data.side_stats) {
+                    html += '<div class="stat-card"><h3>Side Winrates</h3>';
+                    const blue = data.side_stats.blue;
+                    const red = data.side_stats.red;
+
+                    const blueColor = blue.winrate >= 50 ? '#4caf50' : '#f44336';
+                    const redColor = red.winrate >= 50 ? '#4caf50' : '#f44336';
+
+                    html += `
+                        <div class="side-row side-blue">
+                            <span class="side-name">
+                                Blue Side
+                                ${blue.better ? '<span class="better-tag">BETTER</span>' : ''}
+                            </span>
+                            <span style="color: ${blueColor}; font-weight: bold;">${blue.winrate}%</span>
+                            <span style="color: #888;">(${blue.wins}W/${blue.losses}L)</span>
+                        </div>
+                        <div class="side-row side-red">
+                            <span class="side-name">
+                                Red Side
+                                ${red.better ? '<span class="better-tag">BETTER</span>' : ''}
+                            </span>
+                            <span style="color: ${redColor}; font-weight: bold;">${red.winrate}%</span>
+                            <span style="color: #888;">(${red.wins}W/${red.losses}L)</span>
+                        </div>
+                    `;
+                    html += '</div>';
+                }
+
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+                resultsDiv.classList.add('show');
+
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                searchBtn.disabled = false;
+                resultsDiv.innerHTML = '<div class="error-msg">An error occurred. Please try again.</div>';
+                resultsDiv.classList.add('show');
+            }
+        }
+
+        // Enter key to search
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') lookup(false);
+        });
+
+        // Auto-search if coming from a player URL
+        {% if auto_search %}
+        window.addEventListener('load', () => lookup(false));
+        {% endif %}
+    </script>
+</body>
+</html>
