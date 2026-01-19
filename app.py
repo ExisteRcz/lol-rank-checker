@@ -1,18 +1,20 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify
 import requests
 from collections import defaultdict
 import sqlite3
 import json
 import time
 import os
+import re
 
 app = Flask(__name__)
 
-# Use environment variable for API key in production
 API_KEY = os.environ.get("RIOT_API_KEY", "RGAPI-a68d3734-f59b-4a4a-b688-fb4ddce0c125")
 CHAMPIONS = {}
 DDRAGON_VERSION = "14.24.1"
 DB_PATH = os.environ.get("DB_PATH", "players.db")
+
+CURRENT_SEASON = "S2025 S1"
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -23,6 +25,13 @@ def init_db():
             game_name TEXT,
             tag_line TEXT,
             region TEXT,
+            data TEXT,
+            updated_at INTEGER
+        )
+    ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS season_history_cache (
+            id TEXT PRIMARY KEY,
             data TEXT,
             updated_at INTEGER
         )
@@ -51,6 +60,128 @@ def save_player(game_name, tag_line, region, data):
     ''', (player_id, game_name, tag_line, region, json.dumps(data), int(time.time())))
     conn.commit()
     conn.close()
+
+def get_cached_season_history(game_name, tag_line, region):
+    """Get cached season history"""
+    player_id = f"{game_name.lower()}#{tag_line.lower()}#{region}"
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT data, updated_at FROM season_history_cache WHERE id = ?", (player_id,))
+    row = c.fetchone()
+    conn.close()
+    if row:
+        return json.loads(row[0]), row[1]
+    return None, None
+
+def save_season_history_cache(game_name, tag_line, region, data):
+    """Cache season history"""
+    player_id = f"{game_name.lower()}#{tag_line.lower()}#{region}"
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('''
+        INSERT OR REPLACE INTO season_history_cache (id, data, updated_at)
+        VALUES (?, ?, ?)
+    ''', (player_id, json.dumps(data), int(time.time())))
+    conn.commit()
+    conn.close()
+
+def season_sort_key(season):
+    """Convert season string to sortable tuple (year, split)"""
+    # S2025 -> (2025, 0), S14 S3 -> (14, 3), S7 -> (7, 0)
+    match = re.match(r'S(\d+)(?:\s*S(\d))?', season)
+    if match:
+        year = int(match.group(1))
+        split = int(match.group(2)) if match.group(2) else 0
+        return (year, split)
+    return (0, 0)
+
+def scrape_season_history(game_name, tag_line, region):
+    """Scrape season history from leagueofgraphs.com"""
+    log_regions = {
+        "eun1": "eune",
+        "euw1": "euw",
+        "na1": "na",
+        "kr": "kr",
+        "br1": "br",
+        "tr1": "tr",
+        "ru": "ru",
+        "la1": "lan",
+        "la2": "las",
+    }
+    log_region = log_regions.get(region, "eune")
+
+    summoner_slug = f"{game_name}-{tag_line}"
+    url = f"https://www.leagueofgraphs.com/summoner/{log_region}/{summoner_slug}"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+    }
+
+    try:
+        response = requests.get(url, headers=headers, timeout=15)
+        if response.status_code != 200:
+            return {}
+
+        content = response.text
+
+        # Pattern: "Season X. At the end of the season, this player was Tier Division"
+        pattern = r'Season\s*(\d+)(?:\s*\(([^)]+)\))?[^<]*?this player was\s*(Iron|Bronze|Silver|Gold|Platinum|Emerald|Diamond|Master|Grandmaster|Challenger)\s*(I{1,3}|IV)?'
+
+        matches = re.findall(pattern, content, re.I)
+        seen_seasons = set()
+        seasons_list = []
+
+        for season_num, split, tier, division in matches:
+            # Skip future seasons
+            if int(season_num) >= 2026 or int(season_num) == 16:
+                continue
+
+            # Format season name
+            base_season = f"S{season_num}"
+
+            if split:
+                split_match = re.search(r'Split\s*(\d)', split, re.I)
+                if split_match:
+                    season = f"{base_season} S{split_match.group(1)}"
+                else:
+                    season = base_season
+            else:
+                season = base_season
+
+            if season in seen_seasons:
+                continue
+            seen_seasons.add(season)
+
+            rank = division.upper() if division else ""
+
+            seasons_list.append({
+                "season": season,
+                "data": [{
+                    "queue": "Solo/Duo",
+                    "tier": tier.capitalize(),
+                    "rank": rank,
+                    "lp": 0,
+                    "wins": 0,
+                    "losses": 0,
+                    "winrate": 0
+                }]
+            })
+
+        # Sort by season (newest first)
+        seasons_list.sort(key=lambda x: season_sort_key(x["season"]), reverse=True)
+
+        # Convert to dict preserving order
+        history = {}
+        for item in seasons_list:
+            history[item["season"]] = item["data"]
+
+        return history
+
+    except Exception as e:
+        print(f"Error scraping leagueofgraphs: {e}")
+        return {}
 
 def load_champions():
     global CHAMPIONS, DDRAGON_VERSION
@@ -82,9 +213,11 @@ def fetch_player_stats(game_name: str, tag_line: str, region: str = "eun1", matc
         "level": None,
         "profileIcon": None,
         "ranked": [],
+        "season_history": {},
         "top_champions": [],
         "side_stats": None,
         "ddragon_version": DDRAGON_VERSION,
+        "current_season": CURRENT_SEASON,
         "updated_at": int(time.time())
     }
 
@@ -135,6 +268,8 @@ def fetch_player_stats(game_name: str, tag_line: str, region: str = "eun1", matc
                 "losses": losses,
                 "winrate": round(winrate, 1)
             })
+
+    # Season history will be fetched by lookup()
 
     # Step 4: Get match history
     matches_url = f"https://{routing}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids?type=ranked&count={match_count}"
@@ -231,6 +366,20 @@ def player_page(game_name, tag_line, region):
     return render_template("index.html", prefill_name=game_name, prefill_tag=tag_line, prefill_region=region, auto_search=True)
 
 
+def get_season_history(game_name, tag_line, region, force_refresh=False):
+    """Get season history - from cache or fresh scrape"""
+    if not force_refresh:
+        cached, updated_at = get_cached_season_history(game_name, tag_line, region)
+        if cached:
+            return cached
+
+    # Scrape fresh data
+    history = scrape_season_history(game_name, tag_line, region)
+    if history:
+        save_season_history_cache(game_name, tag_line, region, history)
+    return history
+
+
 @app.route("/lookup", methods=["POST"])
 def lookup():
     data = request.json
@@ -248,6 +397,7 @@ def lookup():
         if cached_data:
             cached_data["from_cache"] = True
             cached_data["updated_at"] = updated_at
+            cached_data["season_history"] = get_season_history(game_name, tag_line, region, force_refresh=False)
             return jsonify(cached_data)
 
     # Fetch fresh data
@@ -255,6 +405,8 @@ def lookup():
 
     if result["success"]:
         result["from_cache"] = False
+        # Get fresh season history and cache it
+        result["season_history"] = get_season_history(result["gameName"], result["tagLine"], region, force_refresh=True)
         save_player(result["gameName"], result["tagLine"], region, result)
 
     return jsonify(result)
@@ -265,6 +417,14 @@ init_db()
 load_champions()
 
 if __name__ == "__main__":
+    import socket
+    hostname = socket.gethostname()
+    try:
+        local_ip = socket.gethostbyname(hostname)
+    except:
+        local_ip = "your-local-ip"
+
     print("Starting LoL Rank Checker...")
-    print("Open http://localhost:5000 in your browser")
-    app.run(debug=True, port=5000)
+    print(f"Open http://localhost:5000 in your browser")
+    print(f"Or access from other devices at http://{local_ip}:5000")
+    app.run(debug=True, host='0.0.0.0', port=5000)

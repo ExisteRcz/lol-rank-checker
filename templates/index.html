@@ -440,6 +440,58 @@
             flex-shrink: 0;
         }
 
+        /* Season History Styles */
+        .season-history-card {
+            grid-column: 1 / -1;
+        }
+
+        .season-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .season-tile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .season-tile.current {
+            border-color: rgba(200, 155, 60, 0.4);
+            background: rgba(200, 155, 60, 0.1);
+        }
+
+        .season-emblem-small {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .season-tile-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .season-tile-name {
+            font-size: 0.7rem;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .season-tile-rank {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #f0e6d2;
+            white-space: nowrap;
+        }
+
         @media (max-width: 600px) {
             .player-header {
                 flex-direction: column;
@@ -707,6 +759,56 @@
                     `;
                     html += '</div>';
                 }
+
+                // Season History
+                html += '<div class="stat-card season-history-card"><h3>Season History</h3>';
+                const seasonHistory = data.season_history || {};
+                // Only exclude future seasons
+                const excludeSeasons = new Set(['S2026', 'S16']);
+
+                // Custom sort: S2025 > S14 S3 > S14 S1 > S13 > S12 > ... > S7
+                function seasonSortKey(season) {
+                    const match = season.match(/S(\d+)(?:\s*S(\d))?/);
+                    if (match) {
+                        const year = parseInt(match[1]);
+                        const split = match[2] ? parseInt(match[2]) : 0;
+                        return year * 10 + split;
+                    }
+                    return 0;
+                }
+
+                const seasons = Object.keys(seasonHistory)
+                    .filter(s => !excludeSeasons.has(s))
+                    .sort((a, b) => seasonSortKey(b) - seasonSortKey(a));
+
+                if (seasons.length === 0) {
+                    html += '<p class="unranked">No past season data</p>';
+                } else {
+                    html += '<div class="season-grid">';
+                    seasons.forEach((season) => {
+                        const seasonData = seasonHistory[season];
+                        const soloData = seasonData.find(r => r.queue === 'Solo/Duo') || seasonData[0];
+
+                        if (soloData && soloData.tier) {
+                            const emblemUrl = getRankEmblem(soloData.tier);
+                            const rankText = soloData.rank ? ` ${soloData.rank}` : '';
+                            const lpText = soloData.lp > 0 ? ` (${soloData.lp} LP)` : '';
+
+                            html += `
+                                <div class="season-tile">
+                                    <img src="${emblemUrl}" alt="${soloData.tier}" class="season-emblem-small" onerror="this.style.display='none'">
+                                    <div class="season-tile-info">
+                                        <span class="season-tile-name">${season}</span>
+                                        <span class="season-tile-rank">${soloData.tier}${rankText}${lpText}</span>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+                    html += '</div>';
+                }
+
+                html += '</div>';
 
                 html += '</div>';
                 resultsDiv.innerHTML = html;
