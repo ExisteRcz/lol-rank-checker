@@ -212,10 +212,12 @@ def fetch_player_stats(game_name: str, tag_line: str, region: str = "eun1", matc
         "region": region,
         "level": None,
         "profileIcon": None,
+        "puuid": None,
         "ranked": [],
         "season_history": {},
         "top_champions": [],
         "side_stats": None,
+        "match_history": [],
         "ddragon_version": DDRAGON_VERSION,
         "current_season": CURRENT_SEASON,
         "updated_at": int(time.time())
@@ -231,6 +233,7 @@ def fetch_player_stats(game_name: str, tag_line: str, region: str = "eun1", matc
 
     account_data = response.json()
     puuid = account_data["puuid"]
+    result["puuid"] = puuid
     result["player"] = f"{account_data['gameName']}#{account_data['tagLine']}"
     result["gameName"] = account_data["gameName"]
     result["tagLine"] = account_data["tagLine"]
@@ -284,6 +287,8 @@ def fetch_player_stats(game_name: str, tag_line: str, region: str = "eun1", matc
     champ_stats = defaultdict(lambda: {"wins": 0, "losses": 0})
     side_stats = {"blue": {"wins": 0, "losses": 0}, "red": {"wins": 0, "losses": 0}}
 
+    match_history = []
+
     for match_id in match_ids:
         match_url = f"https://{routing}.api.riotgames.com/lol/match/v5/matches/{match_id}"
         response = requests.get(match_url, headers=headers)
@@ -292,8 +297,9 @@ def fetch_player_stats(game_name: str, tag_line: str, region: str = "eun1", matc
             continue
 
         match_data = response.json()
+        match_info = match_data["info"]
 
-        for participant in match_data["info"]["participants"]:
+        for participant in match_info["participants"]:
             if participant["puuid"] == puuid:
                 champ_id = participant["championId"]
                 won = participant["win"]
@@ -309,7 +315,95 @@ def fetch_player_stats(game_name: str, tag_line: str, region: str = "eun1", matc
                     side_stats[side]["wins"] += 1
                 else:
                     side_stats[side]["losses"] += 1
+
+                # Collect match history details
+                champ_data = CHAMPIONS.get(champ_id, {"name": f"Champion {champ_id}", "id": "Unknown"})
+
+                # Collect all participants data
+                participants_data = []
+                for p in match_info["participants"]:
+                    p_champ_id = p["championId"]
+                    p_champ_data = CHAMPIONS.get(p_champ_id, {"name": f"Champion {p_champ_id}", "id": "Unknown"})
+                    # Extract full rune data
+                    perks = p.get("perks", {})
+                    styles = perks.get("styles", [])
+                    primary_style = styles[0] if len(styles) > 0 else {}
+                    secondary_style = styles[1] if len(styles) > 1 else {}
+
+                    participants_data.append({
+                        "puuid": p["puuid"],
+                        "summonerName": p.get("riotIdGameName", p.get("summonerName", "Unknown")),
+                        "tagLine": p.get("riotIdTagline", ""),
+                        "champion": p_champ_data["name"],
+                        "championId": p_champ_data["id"],
+                        "teamId": p["teamId"],
+                        "win": p["win"],
+                        "kills": p["kills"],
+                        "deaths": p["deaths"],
+                        "assists": p["assists"],
+                        "cs": p["totalMinionsKilled"] + p.get("neutralMinionsKilled", 0),
+                        "gold": p["goldEarned"],
+                        "damage": p["totalDamageDealtToChampions"],
+                        "items": [p.get(f"item{i}", 0) for i in range(7)],
+                        "summoner1": p.get("summoner1Id", 0),
+                        "summoner2": p.get("summoner2Id", 0),
+                        "primaryRune": primary_style.get("style", 0),
+                        "secondaryRune": secondary_style.get("style", 0),
+                        "runes": {
+                            "primary": {
+                                "style": primary_style.get("style", 0),
+                                "perks": [s.get("perk", 0) for s in primary_style.get("selections", [])]
+                            },
+                            "secondary": {
+                                "style": secondary_style.get("style", 0),
+                                "perks": [s.get("perk", 0) for s in secondary_style.get("selections", [])]
+                            },
+                            "statPerks": perks.get("statPerks", {})
+                        }
+                    })
+
+                # Extract full rune data for current player
+                player_perks = participant.get("perks", {})
+                player_styles = player_perks.get("styles", [])
+                player_primary = player_styles[0] if len(player_styles) > 0 else {}
+                player_secondary = player_styles[1] if len(player_styles) > 1 else {}
+
+                match_history.append({
+                    "matchId": match_id,
+                    "champion": champ_data["name"],
+                    "championId": champ_data["id"],
+                    "win": won,
+                    "kills": participant["kills"],
+                    "deaths": participant["deaths"],
+                    "assists": participant["assists"],
+                    "cs": participant["totalMinionsKilled"] + participant.get("neutralMinionsKilled", 0),
+                    "gold": participant["goldEarned"],
+                    "damage": participant["totalDamageDealtToChampions"],
+                    "items": [participant.get(f"item{i}", 0) for i in range(7)],
+                    "summoner1": participant.get("summoner1Id", 0),
+                    "summoner2": participant.get("summoner2Id", 0),
+                    "primaryRune": player_primary.get("style", 0),
+                    "secondaryRune": player_secondary.get("style", 0),
+                    "runes": {
+                        "primary": {
+                            "style": player_primary.get("style", 0),
+                            "perks": [s.get("perk", 0) for s in player_primary.get("selections", [])]
+                        },
+                        "secondary": {
+                            "style": player_secondary.get("style", 0),
+                            "perks": [s.get("perk", 0) for s in player_secondary.get("selections", [])]
+                        },
+                        "statPerks": player_perks.get("statPerks", {})
+                    },
+                    "duration": match_info["gameDuration"],
+                    "timestamp": match_info["gameStartTimestamp"],
+                    "gameMode": match_info.get("gameMode", "CLASSIC"),
+                    "queueId": match_info.get("queueId", 0),
+                    "participants": participants_data
+                })
                 break
+
+    result["match_history"] = match_history
 
     # Top 3 champions
     champ_winrates = []
@@ -397,7 +491,10 @@ def lookup():
         if cached_data:
             cached_data["from_cache"] = True
             cached_data["updated_at"] = updated_at
-            cached_data["season_history"] = get_season_history(game_name, tag_line, region, force_refresh=False)
+            # Only overwrite season_history if we get fresh data
+            fresh_season_history = get_season_history(game_name, tag_line, region, force_refresh=False)
+            if fresh_season_history:
+                cached_data["season_history"] = fresh_season_history
             return jsonify(cached_data)
 
     # Fetch fresh data

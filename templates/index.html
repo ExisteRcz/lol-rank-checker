@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -492,6 +492,552 @@
             white-space: nowrap;
         }
 
+        /* Match History Styles */
+        .match-history-card {
+            grid-column: 1 / -1;
+            overflow: hidden;
+        }
+
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .match-item {
+            display: flex;
+            flex-direction: column;
+            padding: 12px 15px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 4px solid;
+            position: relative;
+        }
+
+        .match-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .match-item.win {
+            border-left-color: #4caf50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .match-item.loss {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .match-champion-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .match-item.win .match-champion-icon {
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        .match-item.loss .match-champion-icon {
+            border-color: rgba(244, 67, 54, 0.5);
+        }
+
+        .match-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .match-top-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .match-result {
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .match-item.win .match-result {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+
+        .match-item.loss .match-result {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+
+        .match-champion-name {
+            font-weight: 500;
+            color: #f0e6d2;
+            font-size: 0.95rem;
+        }
+
+        .match-bottom-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .match-kda {
+            color: #aaa;
+        }
+
+        .match-kda .kills { color: #4caf50; }
+        .match-kda .deaths { color: #f44336; }
+        .match-kda .assists { color: #5bc0de; }
+
+        .match-cs {
+            color: #c89b3c;
+        }
+
+        .match-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .match-duration {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .match-time {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .load-more-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #aaa;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .load-more-btn:hover {
+            background: rgba(200, 155, 60, 0.15);
+            border-color: #c89b3c;
+            color: #f0e6d2;
+        }
+
+        /* Expandable Match Styles */
+        .match-item {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .match-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .match-expand-icon {
+            color: #666;
+            font-size: 1rem;
+            transition: transform 0.3s;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .match-item.expanded .match-expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .match-details {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+
+        .match-item.expanded .match-details {
+            display: block;
+        }
+
+        .match-player-stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .match-stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .match-stat-label {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .match-stat-value {
+            font-size: 0.95rem;
+            color: #f0e6d2;
+            font-weight: 600;
+        }
+
+        .match-items-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 15px;
+        }
+
+        .match-item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .match-runes {
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .match-rune-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .match-teams {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        .match-team {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .match-team.blue-team {
+            border: 1px solid rgba(30, 144, 255, 0.3);
+        }
+
+        .match-team.red-team {
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .match-team-header {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .team-header-stats {
+            display: flex;
+            gap: 5px;
+        }
+
+        .header-dmg {
+            font-size: 0.65rem;
+            color: #d9534f;
+            min-width: 45px;
+            text-align: right;
+            text-transform: uppercase;
+        }
+
+        .header-gold {
+            font-size: 0.65rem;
+            color: #c89b3c;
+            min-width: 40px;
+            text-align: right;
+            text-transform: uppercase;
+        }
+
+        .match-team.blue-team .match-team-header {
+            color: #5bc0de;
+        }
+
+        .match-team.red-team .match-team-header {
+            color: #d9534f;
+        }
+
+        .match-participant {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            min-width: 0;
+        }
+
+        .match-participant:last-child {
+            border-bottom: none;
+        }
+
+        .match-participant.current-player {
+            background: rgba(200, 155, 60, 0.15);
+            margin: 0 -8px;
+            padding: 6px 8px;
+            border-radius: 4px;
+        }
+
+        .participant-champ-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .participant-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .participant-name {
+            font-size: 0.8rem;
+            color: #f0e6d2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .participant-name:hover {
+            color: #c89b3c;
+            text-decoration: underline;
+        }
+
+        .participant-kda {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        .participant-items {
+            display: flex;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+
+        .participant-item-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .participant-damage {
+            font-size: 0.75rem;
+            color: #d9534f;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .participant-gold {
+            font-size: 0.75rem;
+            color: #c89b3c;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* Rune Popup Styles */
+        .match-runes {
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .match-runes:hover {
+            background: rgba(200, 155, 60, 0.2);
+        }
+
+        .match-runes:hover .match-rune-icon {
+            transform: scale(1.05);
+        }
+
+        .rune-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+
+        .rune-popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .rune-popup {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(200, 155, 60, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            max-width: 420px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .rune-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rune-popup-title {
+            font-size: 1.1rem;
+            color: #f0e6d2;
+            font-weight: 600;
+        }
+
+        .rune-popup-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .rune-popup-close:hover {
+            color: #f0e6d2;
+        }
+
+        .rune-tree {
+            margin-bottom: 20px;
+        }
+
+        .rune-tree-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .rune-tree-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        .rune-tree-name {
+            font-size: 1rem;
+            color: #c89b3c;
+            font-weight: 600;
+        }
+
+        .rune-tree.secondary .rune-tree-name {
+            color: #888;
+        }
+
+        .rune-perks {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-left: 12px;
+        }
+
+        .rune-perk {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .rune-perk-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .rune-perk.keystone {
+            background: rgba(200, 155, 60, 0.15);
+            border: 1px solid rgba(200, 155, 60, 0.3);
+        }
+
+        .rune-perk.keystone .rune-perk-icon {
+            width: 44px;
+            height: 44px;
+        }
+
+        .rune-perk-name {
+            font-size: 0.85rem;
+            color: #f0e6d2;
+        }
+
+        .rune-stat-shards {
+            display: flex;
+            gap: 20px;
+            padding-top: 15px;
+            margin-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rune-stat-shard {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rune-stat-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .rune-stat-name {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
         @media (max-width: 600px) {
             .player-header {
                 flex-direction: column;
@@ -517,10 +1063,131 @@
             .share-url-container {
                 flex-direction: column;
             }
+
+            .match-item {
+                padding: 10px 12px;
+                gap: 10px;
+            }
+
+            .match-champion-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .match-info {
+                flex: 1;
+                min-width: 100px;
+            }
+
+            .match-top-row {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .match-champion-name {
+                font-size: 0.85rem;
+            }
+
+            .match-bottom-row {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .match-stats {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 2px;
+            }
+
+            .match-expand-icon {
+                position: absolute;
+                right: 12px;
+                top: 12px;
+            }
+
+            .match-item.expanded .match-expand-icon {
+                transform: rotate(180deg);
+            }
+
+            .match-details {
+                width: 100%;
+                margin-top: 12px;
+                padding-top: 12px;
+            }
+
+            .match-player-stats {
+                justify-content: space-around;
+                gap: 8px;
+            }
+
+            .match-stat-box {
+                padding: 6px 10px;
+            }
+
+            .match-items-row {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .match-item-icon {
+                width: 28px;
+                height: 28px;
+            }
+
+            .match-runes {
+                margin-left: 0;
+            }
+
+            .match-teams {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .match-team {
+                padding: 10px;
+            }
+
+            .match-participant {
+                gap: 6px;
+                padding: 5px 0;
+            }
+
+            .participant-champ-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .participant-name {
+                font-size: 0.75rem;
+            }
+
+            .participant-kda {
+                font-size: 0.65rem;
+            }
+
+            .participant-items {
+                display: none;
+            }
+
+            .participant-damage, .participant-gold {
+                min-width: 32px;
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Rune Popup -->
+    <div class="rune-popup-overlay" id="runePopup" onclick="closeRunePopup(event)">
+        <div class="rune-popup" onclick="event.stopPropagation()">
+            <div class="rune-popup-header">
+                <span class="rune-popup-title">Runes</span>
+                <button class="rune-popup-close" onclick="closeRunePopup()">&times;</button>
+            </div>
+            <div id="runePopupContent"></div>
+        </div>
+    </div>
+
     <div class="container">
         <h1>LoL Rank Checker</h1>
         <p class="subtitle">Check any player's ranked stats, top champions, and side winrates</p>
@@ -564,6 +1231,8 @@
         const RANK_EMBLEMS = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images';
 
         let currentPlayerData = null;
+        let matchesDisplayed = 5;
+        let matchRunesData = [];
 
         function getRankEmblem(tier) {
             const t = tier.toLowerCase();
@@ -576,6 +1245,222 @@
 
         function getChampionIcon(champId, version) {
             return `${DDRAGON_BASE}/${version}/img/champion/${champId}.png`;
+        }
+
+        function getItemIcon(itemId, version) {
+            if (!itemId || itemId === 0) return null;
+            return `${DDRAGON_BASE}/${version}/img/item/${itemId}.png`;
+        }
+
+        // Rune tree data
+        const RUNE_TREES = {
+            8000: { name: 'Precision', icon: 'perk-images/Styles/7201_Precision.png' },
+            8100: { name: 'Domination', icon: 'perk-images/Styles/7200_Domination.png' },
+            8200: { name: 'Sorcery', icon: 'perk-images/Styles/7202_Sorcery.png' },
+            8300: { name: 'Inspiration', icon: 'perk-images/Styles/7203_Whimsy.png' },
+            8400: { name: 'Resolve', icon: 'perk-images/Styles/7204_Resolve.png' }
+        };
+
+        // Individual rune data
+        const RUNES = {
+            // Precision
+            8005: { name: 'Press the Attack', icon: 'perk-images/Styles/Precision/PressTheAttack/PressTheAttack.png' },
+            8008: { name: 'Lethal Tempo', icon: 'perk-images/Styles/Precision/LethalTempo/LethalTempoTemp.png' },
+            8021: { name: 'Fleet Footwork', icon: 'perk-images/Styles/Precision/FleetFootwork/FleetFootwork.png' },
+            8010: { name: 'Conqueror', icon: 'perk-images/Styles/Precision/Conqueror/Conqueror.png' },
+            9101: { name: 'Overheal', icon: 'perk-images/Styles/Precision/Overheal.png' },
+            9111: { name: 'Triumph', icon: 'perk-images/Styles/Precision/Triumph.png' },
+            8009: { name: 'Presence of Mind', icon: 'perk-images/Styles/Precision/PresenceOfMind/PresenceOfMind.png' },
+            9104: { name: 'Legend: Alacrity', icon: 'perk-images/Styles/Precision/LegendAlacrity/LegendAlacrity.png' },
+            9105: { name: 'Legend: Tenacity', icon: 'perk-images/Styles/Precision/LegendTenacity/LegendTenacity.png' },
+            9103: { name: 'Legend: Bloodline', icon: 'perk-images/Styles/Precision/LegendBloodline/LegendBloodline.png' },
+            8014: { name: 'Coup de Grace', icon: 'perk-images/Styles/Precision/CoupDeGrace/CoupDeGrace.png' },
+            8017: { name: 'Cut Down', icon: 'perk-images/Styles/Precision/CutDown/CutDown.png' },
+            8299: { name: 'Last Stand', icon: 'perk-images/Styles/Sorcery/LastStand/LastStand.png' },
+            // Domination
+            8112: { name: 'Electrocute', icon: 'perk-images/Styles/Domination/Electrocute/Electrocute.png' },
+            8124: { name: 'Predator', icon: 'perk-images/Styles/Domination/Predator/Predator.png' },
+            8128: { name: 'Dark Harvest', icon: 'perk-images/Styles/Domination/DarkHarvest/DarkHarvest.png' },
+            9923: { name: 'Hail of Blades', icon: 'perk-images/Styles/Domination/HailOfBlades/HailOfBlades.png' },
+            8126: { name: 'Cheap Shot', icon: 'perk-images/Styles/Domination/CheapShot/CheapShot.png' },
+            8139: { name: 'Taste of Blood', icon: 'perk-images/Styles/Domination/TasteOfBlood/GreenTerror_TasteOfBlood.png' },
+            8143: { name: 'Sudden Impact', icon: 'perk-images/Styles/Domination/SuddenImpact/SuddenImpact.png' },
+            8136: { name: 'Zombie Ward', icon: 'perk-images/Styles/Domination/ZombieWard/ZombieWard.png' },
+            8120: { name: 'Ghost Poro', icon: 'perk-images/Styles/Domination/GhostPoro/GhostPoro.png' },
+            8138: { name: 'Eyeball Collection', icon: 'perk-images/Styles/Domination/EyeballCollection/EyeballCollection.png' },
+            8135: { name: 'Treasure Hunter', icon: 'perk-images/Styles/Domination/TreasureHunter/TreasureHunter.png' },
+            8134: { name: 'Ingenious Hunter', icon: 'perk-images/Styles/Domination/IngeniousHunter/IngeniousHunter.png' },
+            8105: { name: 'Relentless Hunter', icon: 'perk-images/Styles/Domination/RelentlessHunter/RelentlessHunter.png' },
+            8106: { name: 'Ultimate Hunter', icon: 'perk-images/Styles/Domination/UltimateHunter/UltimateHunter.png' },
+            // Sorcery
+            8214: { name: 'Summon Aery', icon: 'perk-images/Styles/Sorcery/SummonAery/SummonAery.png' },
+            8229: { name: 'Arcane Comet', icon: 'perk-images/Styles/Sorcery/ArcaneComet/ArcaneComet.png' },
+            8230: { name: 'Phase Rush', icon: 'perk-images/Styles/Sorcery/PhaseRush/PhaseRush.png' },
+            8224: { name: 'Nullifying Orb', icon: 'perk-images/Styles/Sorcery/NullifyingOrb/Pokeshield.png' },
+            8226: { name: 'Manaflow Band', icon: 'perk-images/Styles/Sorcery/ManaflowBand/ManaflowBand.png' },
+            8275: { name: 'Nimbus Cloak', icon: 'perk-images/Styles/Sorcery/NimbusCloak/6361.png' },
+            8210: { name: 'Transcendence', icon: 'perk-images/Styles/Sorcery/Transcendence/Transcendence.png' },
+            8234: { name: 'Celerity', icon: 'perk-images/Styles/Sorcery/Celerity/CelerityTemp.png' },
+            8233: { name: 'Absolute Focus', icon: 'perk-images/Styles/Sorcery/AbsoluteFocus/AbsoluteFocus.png' },
+            8237: { name: 'Scorch', icon: 'perk-images/Styles/Sorcery/Scorch/Scorch.png' },
+            8232: { name: 'Waterwalking', icon: 'perk-images/Styles/Sorcery/Waterwalking/Waterwalking.png' },
+            8236: { name: 'Gathering Storm', icon: 'perk-images/Styles/Sorcery/GatheringStorm/GatheringStorm.png' },
+            // Resolve
+            8437: { name: 'Grasp of the Undying', icon: 'perk-images/Styles/Resolve/GraspOfTheUndying/GraspOfTheUndying.png' },
+            8439: { name: 'Aftershock', icon: 'perk-images/Styles/Resolve/VeteranAftershock/VeteranAftershock.png' },
+            8465: { name: 'Guardian', icon: 'perk-images/Styles/Resolve/Guardian/Guardian.png' },
+            8446: { name: 'Demolish', icon: 'perk-images/Styles/Resolve/Demolish/Demolish.png' },
+            8463: { name: 'Font of Life', icon: 'perk-images/Styles/Resolve/FontOfLife/FontOfLife.png' },
+            8401: { name: 'Shield Bash', icon: 'perk-images/Styles/Resolve/MirrorShell/MirrorShell.png' },
+            8429: { name: 'Conditioning', icon: 'perk-images/Styles/Resolve/Conditioning/Conditioning.png' },
+            8444: { name: 'Second Wind', icon: 'perk-images/Styles/Resolve/SecondWind/SecondWind.png' },
+            8473: { name: 'Bone Plating', icon: 'perk-images/Styles/Resolve/BonePlating/BonePlating.png' },
+            8451: { name: 'Overgrowth', icon: 'perk-images/Styles/Resolve/Overgrowth/Overgrowth.png' },
+            8453: { name: 'Revitalize', icon: 'perk-images/Styles/Resolve/Revitalize/Revitalize.png' },
+            8242: { name: 'Unflinching', icon: 'perk-images/Styles/Sorcery/Unflinching/Unflinching.png' },
+            // Inspiration
+            8351: { name: 'Glacial Augment', icon: 'perk-images/Styles/Inspiration/GlacialAugment/GlacialAugment.png' },
+            8360: { name: 'Unsealed Spellbook', icon: 'perk-images/Styles/Inspiration/UnsealedSpellbook/UnsealedSpellbook.png' },
+            8369: { name: 'First Strike', icon: 'perk-images/Styles/Inspiration/FirstStrike/FirstStrike.png' },
+            8306: { name: 'Hextech Flashtraption', icon: 'perk-images/Styles/Inspiration/HextechFlashtraption/HextechFlashtraption.png' },
+            8304: { name: 'Magical Footwear', icon: 'perk-images/Styles/Inspiration/MagicalFootwear/MagicalFootwear.png' },
+            8313: { name: 'Triple Tonic', icon: 'perk-images/Styles/Inspiration/PerfectTiming/PerfectTiming.png' },
+            8321: { name: 'Future\'s Market', icon: 'perk-images/Styles/Inspiration/FuturesMarket/FuturesMarket.png' },
+            8316: { name: 'Minion Dematerializer', icon: 'perk-images/Styles/Inspiration/MinionDematerializer/MinionDematerializer.png' },
+            8345: { name: 'Biscuit Delivery', icon: 'perk-images/Styles/Inspiration/BiscuitDelivery/BiscuitDelivery.png' },
+            8347: { name: 'Cosmic Insight', icon: 'perk-images/Styles/Inspiration/CosmicInsight/CosmicInsight.png' },
+            8410: { name: 'Approach Velocity', icon: 'perk-images/Styles/Resolve/ApproachVelocity/ApproachVelocity.png' },
+            8352: { name: 'Time Warp Tonic', icon: 'perk-images/Styles/Inspiration/TimeWarpTonic/TimeWarpTonic.png' },
+            // Jack of All Trades
+            8135: { name: 'Treasure Hunter', icon: 'perk-images/Styles/Domination/TreasureHunter/TreasureHunter.png' }
+        };
+
+        // Stat shards
+        const STAT_SHARDS = {
+            5008: { name: 'Adaptive Force', icon: 'perk-images/StatMods/StatModsAdaptiveForceIcon.png' },
+            5005: { name: 'Attack Speed', icon: 'perk-images/StatMods/StatModsAttackSpeedIcon.png' },
+            5007: { name: 'Ability Haste', icon: 'perk-images/StatMods/StatModsCDRScalingIcon.png' },
+            5002: { name: 'Armor', icon: 'perk-images/StatMods/StatModsArmorIcon.png' },
+            5003: { name: 'Magic Resist', icon: 'perk-images/StatMods/StatModsMagicResIcon.png' },
+            5001: { name: 'Health', icon: 'perk-images/StatMods/StatModsHealthScalingIcon.png' },
+            5010: { name: 'Move Speed', icon: 'perk-images/StatMods/StatModsMovementSpeedIcon.png' }
+        };
+
+        function getRuneIcon(runeId) {
+            const tree = RUNE_TREES[runeId];
+            if (tree) return `${DDRAGON_BASE}/img/${tree.icon}`;
+            const rune = RUNES[runeId];
+            if (rune) return `${DDRAGON_BASE}/img/${rune.icon}`;
+            return null;
+        }
+
+        function getRuneName(runeId) {
+            const tree = RUNE_TREES[runeId];
+            if (tree) return tree.name;
+            const rune = RUNES[runeId];
+            if (rune) return rune.name;
+            return 'Unknown';
+        }
+
+        function showRunePopup(runesData, event) {
+            event.stopPropagation();
+            if (!runesData) return;
+
+            const popup = document.getElementById('runePopup');
+            const content = document.getElementById('runePopupContent');
+
+            let html = '';
+
+            // Primary tree
+            if (runesData.primary && runesData.primary.style) {
+                const primaryTree = RUNE_TREES[runesData.primary.style];
+                html += `<div class="rune-tree">
+                    <div class="rune-tree-header">
+                        <img src="${getRuneIcon(runesData.primary.style)}" class="rune-tree-icon" onerror="this.style.display='none'">
+                        <span class="rune-tree-name">${primaryTree?.name || 'Primary'}</span>
+                    </div>
+                    <div class="rune-perks">`;
+
+                runesData.primary.perks.slice(0, 4).forEach((perkId, idx) => {
+                    const rune = RUNES[perkId];
+                    const isKeystone = idx === 0;
+                    html += `<div class="rune-perk ${isKeystone ? 'keystone' : ''}">
+                        <img src="${getRuneIcon(perkId)}" class="rune-perk-icon" onerror="this.style.display='none'">
+                        <span class="rune-perk-name">${rune?.name || 'Unknown'}</span>
+                    </div>`;
+                });
+
+                html += `</div></div>`;
+            }
+
+            // Secondary tree
+            if (runesData.secondary && runesData.secondary.style) {
+                const secondaryTree = RUNE_TREES[runesData.secondary.style];
+                html += `<div class="rune-tree secondary">
+                    <div class="rune-tree-header">
+                        <img src="${getRuneIcon(runesData.secondary.style)}" class="rune-tree-icon" onerror="this.style.display='none'">
+                        <span class="rune-tree-name">${secondaryTree?.name || 'Secondary'}</span>
+                    </div>
+                    <div class="rune-perks">`;
+
+                runesData.secondary.perks.slice(0, 2).forEach(perkId => {
+                    const rune = RUNES[perkId];
+                    html += `<div class="rune-perk">
+                        <img src="${getRuneIcon(perkId)}" class="rune-perk-icon" onerror="this.style.display='none'">
+                        <span class="rune-perk-name">${rune?.name || 'Unknown'}</span>
+                    </div>`;
+                });
+
+                html += `</div></div>`;
+            }
+
+            // Stat shards
+            if (runesData.statPerks) {
+                html += `<div class="rune-stat-shards">`;
+                ['offense', 'flex', 'defense'].forEach(type => {
+                    const shardId = runesData.statPerks[type];
+                    const shard = STAT_SHARDS[shardId];
+                    if (shard) {
+                        html += `<div class="rune-stat-shard">
+                            <img src="${DDRAGON_BASE}/img/${shard.icon}" class="rune-stat-icon" onerror="this.style.display='none'">
+                            <span class="rune-stat-name">${shard.name}</span>
+                        </div>`;
+                    }
+                });
+                html += `</div>`;
+            }
+
+            content.innerHTML = html;
+            popup.classList.add('show');
+        }
+
+        function closeRunePopup(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('runePopup').classList.remove('show');
+        }
+
+        function formatGold(gold) {
+            if (gold >= 1000) return (gold / 1000).toFixed(1) + 'k';
+            return gold;
+        }
+
+        function formatDamage(dmg) {
+            if (dmg >= 1000) return (dmg / 1000).toFixed(1) + 'k';
+            return dmg;
+        }
+
+        function toggleMatchDetails(matchId) {
+            const matchEl = document.getElementById(`match-${matchId}`);
+            if (matchEl) {
+                matchEl.classList.toggle('expanded');
+            }
+        }
+
+        function lookupPlayer(name, tag, region) {
+            document.getElementById('gameName').value = name;
+            document.getElementById('tagLine').value = tag;
+            document.getElementById('region').value = region;
+            lookup(false);
         }
 
         function formatTime(timestamp) {
@@ -591,6 +1476,186 @@
 
         function getShareUrl(gameName, tagLine, region) {
             return `${window.location.origin}/player/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/${region}`;
+        }
+
+        function formatMatchTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function renderMatchHistory(matches, version, limit, currentRegion) {
+            const displayMatches = matches.slice(0, limit);
+            let html = '';
+            matchRunesData = [];
+
+            displayMatches.forEach((match, index) => {
+                const resultClass = match.win ? 'win' : 'loss';
+                const resultText = match.win ? 'Victory' : 'Defeat';
+                const champIconUrl = getChampionIcon(match.championId, version);
+                const kda = match.deaths === 0 ? 'Perfect' : ((match.kills + match.assists) / match.deaths).toFixed(2);
+                const matchIndex = index;
+
+                // Items HTML
+                let itemsHtml = '';
+                if (match.items) {
+                    match.items.forEach(itemId => {
+                        const itemUrl = getItemIcon(itemId, version);
+                        if (itemUrl) {
+                            itemsHtml += `<img src="${itemUrl}" class="match-item-icon" onerror="this.style.visibility='hidden'">`;
+                        } else {
+                            itemsHtml += `<div class="match-item-icon"></div>`;
+                        }
+                    });
+                }
+
+                // Runes HTML - store runes data for popup
+                matchRunesData[matchIndex] = match.runes;
+                const fallbackIcon = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><circle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23333%22 stroke=%22%23555%22/></svg>';
+                const primaryRuneUrl = getRuneIcon(match.primaryRune) || fallbackIcon;
+                const secondaryRuneUrl = getRuneIcon(match.secondaryRune) || fallbackIcon;
+                let runesHtml = `<img src="${primaryRuneUrl}" class="match-rune-icon" onerror="this.src='${fallbackIcon}'">`;
+                runesHtml += `<img src="${secondaryRuneUrl}" class="match-rune-icon" onerror="this.src='${fallbackIcon}'">`;
+
+                // Teams HTML
+                let teamsHtml = '';
+                if (match.participants) {
+                    const blueTeam = match.participants.filter(p => p.teamId === 100);
+                    const redTeam = match.participants.filter(p => p.teamId === 200);
+
+                    const renderTeam = (team, teamName, teamClass) => {
+                        let teamHtml = `<div class="match-team ${teamClass}">`;
+                        teamHtml += `<div class="match-team-header">
+                            <span>${teamName} ${team[0]?.win ? '(Victory)' : '(Defeat)'}</span>
+                            <div class="team-header-stats">
+                                <span class="header-dmg" title="Damage">DMG</span>
+                                <span class="header-gold" title="Gold">GOLD</span>
+                            </div>
+                        </div>`;
+
+                        team.forEach(p => {
+                            const pChampIcon = getChampionIcon(p.championId, version);
+                            const isCurrentPlayer = p.puuid === currentPlayerData?.puuid;
+                            const playerClass = isCurrentPlayer ? 'match-participant current-player' : 'match-participant';
+
+                            let pItemsHtml = '';
+                            if (p.items) {
+                                p.items.slice(0, 6).forEach(itemId => {
+                                    const itemUrl = getItemIcon(itemId, version);
+                                    if (itemUrl) {
+                                        pItemsHtml += `<img src="${itemUrl}" class="participant-item-icon" onerror="this.style.visibility='hidden'">`;
+                                    } else {
+                                        pItemsHtml += `<div class="participant-item-icon"></div>`;
+                                    }
+                                });
+                            }
+
+                            teamHtml += `
+                                <div class="${playerClass}">
+                                    <img src="${pChampIcon}" class="participant-champ-icon" onerror="this.style.display='none'">
+                                    <div class="participant-info">
+                                        <div class="participant-name" onclick="lookupPlayer('${p.summonerName}', '${p.tagLine}', '${currentRegion}')">${p.summonerName}</div>
+                                        <div class="participant-kda">${p.kills}/${p.deaths}/${p.assists}</div>
+                                    </div>
+                                    <div class="participant-items">${pItemsHtml}</div>
+                                    <div class="participant-damage">${formatDamage(p.damage)}</div>
+                                    <div class="participant-gold">${formatGold(p.gold)}</div>
+                                </div>
+                            `;
+                        });
+                        teamHtml += '</div>';
+                        return teamHtml;
+                    };
+
+                    teamsHtml = `<div class="match-teams">
+                        ${renderTeam(blueTeam, 'Blue Team', 'blue-team')}
+                        ${renderTeam(redTeam, 'Red Team', 'red-team')}
+                    </div>`;
+                }
+
+                html += `
+                    <div class="match-item ${resultClass}" id="match-${matchIndex}" onclick="toggleMatchDetails(${matchIndex})">
+                        <div class="match-header">
+                            <img src="${champIconUrl}" alt="${match.champion}" class="match-champion-icon" onerror="this.style.display='none'">
+                            <div class="match-info">
+                                <div class="match-top-row">
+                                    <span class="match-result">${resultText}</span>
+                                    <span class="match-champion-name">${match.champion}</span>
+                                </div>
+                                <div class="match-bottom-row">
+                                    <span class="match-kda">
+                                        <span class="kills">${match.kills}</span> /
+                                        <span class="deaths">${match.deaths}</span> /
+                                        <span class="assists">${match.assists}</span>
+                                        <span style="color: #666; margin-left: 5px;">(${kda} KDA)</span>
+                                    </span>
+                                    <span class="match-cs">${match.cs} CS</span>
+                                </div>
+                            </div>
+                            <div class="match-stats">
+                                <span class="match-duration">${formatDuration(match.duration)}</span>
+                                <span class="match-time">${formatMatchTime(match.timestamp)}</span>
+                            </div>
+                            <span class="match-expand-icon">▼</span>
+                        </div>
+                        <div class="match-details" onclick="event.stopPropagation()">
+                            <div class="match-player-stats">
+                                <div class="match-stat-box">
+                                    <div class="match-stat-label">Damage</div>
+                                    <div class="match-stat-value" style="color: #d9534f;">${formatDamage(match.damage || 0)}</div>
+                                </div>
+                                <div class="match-stat-box">
+                                    <div class="match-stat-label">Gold</div>
+                                    <div class="match-stat-value" style="color: #c89b3c;">${formatGold(match.gold || 0)}</div>
+                                </div>
+                                <div class="match-stat-box">
+                                    <div class="match-stat-label">CS</div>
+                                    <div class="match-stat-value">${match.cs}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 15px; align-items: flex-start; margin-bottom: 15px; flex-wrap: wrap;">
+                                <div class="match-items-row">${itemsHtml}</div>
+                                <div class="match-runes" onclick="showRunePopup(matchRunesData[${matchIndex}], event)" title="Click to view runes">${runesHtml}</div>
+                            </div>
+                            ${teamsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        function loadMoreMatches() {
+            if (!currentPlayerData || !currentPlayerData.match_history) return;
+
+            matchesDisplayed += 5;
+            const version = currentPlayerData.ddragon_version || '14.24.1';
+            const currentRegion = currentPlayerData.region || document.getElementById('region').value;
+            const matchListDiv = document.getElementById('matchList');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const totalMatches = currentPlayerData.match_history.length;
+
+            matchListDiv.innerHTML = renderMatchHistory(currentPlayerData.match_history, version, matchesDisplayed, currentRegion);
+
+            if (matchesDisplayed >= totalMatches) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                const remaining = totalMatches - matchesDisplayed;
+                loadMoreBtn.textContent = `Load more (${remaining} remaining)`;
+            }
         }
 
         function copyToClipboard(text, btn) {
@@ -808,6 +1873,20 @@
                     html += '</div>';
                 }
 
+                html += '</div>';
+
+                // Match History
+                matchesDisplayed = 5;
+                const matchHistory = data.match_history || [];
+                html += '<div class="stat-card match-history-card"><h3>Match History</h3>';
+                if (matchHistory.length === 0) {
+                    html += '<p class="unranked">No recent ranked matches</p>';
+                } else {
+                    html += `<div class="match-list" id="matchList">${renderMatchHistory(matchHistory, version, matchesDisplayed, region)}</div>`;
+                    if (matchHistory.length > matchesDisplayed) {
+                        html += `<button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreMatches()">Load more (${matchHistory.length - matchesDisplayed} remaining)</button>`;
+                    }
+                }
                 html += '</div>';
 
                 html += '</div>';
